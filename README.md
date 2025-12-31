@@ -81,11 +81,9 @@ python train.py
 The pipeline automatically runs evaluation on the test set after training completes. To manually evaluate a specific checkpoint:
 
 ```bash
-python train.py --eval_only --ckpt_path checkpoints/model_best.ckpt
+python train.py --eval_only --save_dir checkpoints/model_best.ckpt
 
 ```
-
-*(Note: Ensure your `train.py` is set up to accept CLI arguments for evaluation mode).*
 
 ## 📊 Metrics
 

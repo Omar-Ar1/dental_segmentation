@@ -54,6 +54,9 @@ def get_parser():
     parser.add_argument("--accum", type=int, default=4,
                         help="Gradient accumulation steps")
     
+    # Eval/Test settings
+    parser.add_argument("--eval_only", action="store_true",
+                        help="Number of epochs between validations")
     # --- Checkpointing ---
     parser.add_argument("--save_dir", type=str, default="dental_segmentation/experiments",
                         help="Directory to save logs and checkpoints relative to work_dir")

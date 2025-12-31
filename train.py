@@ -78,7 +78,6 @@ def main():
 
     # 4. Trainer
     trainer = L.Trainer(
-        default_root_dir="/gpfs/workdir/arbiom/dental_segmentation/experiments",
         max_epochs=args.epochs,
         accelerator='gpu',
         devices=torch.cuda.device_count(),
@@ -99,7 +98,8 @@ def main():
         print("🚀 Starting new training run")
 
     # 5. Fit
-    trainer.fit(model, dm, ckpt_path=ckpt_path)
+    if not args.eval_only:
+        trainer.fit(model, dm, ckpt_path=ckpt_path)
 
     # 6. Test
     trainer.test(model, dm, ckpt_path="last")
