@@ -18,6 +18,7 @@ from lightning.pytorch.loggers import TensorBoardLogger
 
 from src.models.module import DentalSegmentationModule
 from src.data.datamodule import DentalDataModule
+from src.config.defaults import get_cfg
 
 # MONAI transforms (your code was mixing torchvision syntax)
 from monai.transforms import (
@@ -32,38 +33,33 @@ import torch
 
 def main():
     # Configuration (Could be loaded from a YAML file via Hydra)
-    config = {
-        "json_path": "dataset/annotations.json",
-        "img_dir": "dataset/images",
-        "backbone": "vit_large_patch16_dinov3.lvd1689m",
-        "batch_size": 8,
-        "lr": 1e-3,
-        "epochs": 100,
-        "accum": 4,
-        "seed": 42,
-    }
+    args = get_cfg()
 
-    L.seed_everything(config["seed"])
+    L.seed_everything(args.seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
     torch.set_float32_matmul_precision("high")
     # 1. Init Data
     dm = DentalDataModule(
-        json_path=config["json_path"],
-        img_dir=config["img_dir"],
-        batch_size=config["batch_size"],
+        json_path=args.json_path,
+        img_dir=args.data_root,
+        batch_size=args.batch_size,
     )
 
     # 2. Init Model
     model = DentalSegmentationModule(
-        backbone_name=config["backbone"],
-        num_classes=2,
-        lr=config["lr"],
-        num_register_tokens=4,
+        backbone_name=args.backbone,
+        num_classes=args.num_classes,
+        lr=args.lr,
+        num_register_tokens=args.num_register_tokens,
+        feat_channels=args.feat_channels,
+        use_boundary_loss=args.use_boundary_loss,
+        lambda_b=args.lambda_b,
+        taps=args.taps,	
     )
 
     # 3. Callbacks
-    checkpoints_dir = "/gpfs/workdir/arbiom/dental_segmentation/checkpoints"
+    checkpoints_dir = args.save_dir
     checkpoint_cb = ModelCheckpoint(
         dirpath=checkpoints_dir,
         monitor="val/dice",
@@ -83,13 +79,13 @@ def main():
     # 4. Trainer
     trainer = L.Trainer(
         default_root_dir="/gpfs/workdir/arbiom/dental_segmentation/experiments",
-        max_epochs=config["epochs"],
+        max_epochs=args.epochs,
         accelerator='gpu',
         devices=torch.cuda.device_count(),
         strategy='ddp_find_unused_parameters_false',
         precision='bf16-mixed',
-        accumulate_grad_batches=config["accum"],
-        logger=TensorBoardLogger("/gpfs/workdir/arbiom/dental_segmentation/logs/", name="dino_seg"),
+        accumulate_grad_batches=args.accum,
+        logger=TensorBoardLogger(args.tensorboard_logs_dir, name="dino_seg"),
         callbacks=[checkpoint_cb, early_stop_cb, lr_monitor],
         log_every_n_steps=10,
     )
