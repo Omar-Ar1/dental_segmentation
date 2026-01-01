@@ -12,7 +12,7 @@ class DentalDataModule(L.LightningDataModule):
         img_dir: str,
         input_size: int = 512,
         batch_size: int = 4,
-        num_workers: int = 4,
+        num_workers: int = 2,
         val_frac: float = 0.15,
         test_frac: float = 0.15,
         seed: int = 42,

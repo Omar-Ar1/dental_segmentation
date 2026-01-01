@@ -20,7 +20,7 @@ def get_parser():
     parser.add_argument("--json_path", type=str, default="dataset/annotations.json",
                         help="Path to the COCO-style annotation JSON file")
     parser.add_argument("--input_size", type=int, default=518,
-                        help="Input image resolution (e.g. 518 for DINOv2/v3)")
+                        help="Input image resolution (e.g. 518 for DINOvv3 and 512 for Dinov2)")
     parser.add_argument("--batch_size", type=int, default=4,
                         help="Batch size per GPU")
     parser.add_argument("--num_workers", type=int, default=4,
@@ -31,7 +31,7 @@ def get_parser():
                         help="Fraction of data to use for testing")
 
     # --- Model Architecture ---
-    parser.add_argument("--backbone", type=str, default="vit_large_patch14_dinov2",
+    parser.add_argument("--backbone", type=str, default="vit_large_patch16_dinov3.lvd1689m",
                         help="Name of the timm backbone (e.g., vit_large_patch14_dinov2, vit_giant_patch14_dinov2)")
     parser.add_argument("--num_classes", type=int, default=2,
                         help="Number of segmentation classes (including background)")
@@ -39,7 +39,7 @@ def get_parser():
                         help="Number of register tokens to drop (specific to DINOv3)")
     parser.add_argument("--feat_channels", type=int, default=256,
                         help="Number of feature channels in the FPN decoder")
-    parser.add_argument("--taps", type=int, nargs='+', default=[6, 12, 18, 23],)
+    parser.add_argument("--taps", type=int, nargs='+', default=[12, 18, 23],)
     
     # --- Loss Functions ---
     parser.add_argument("--use_boundary_loss", action="store_true",

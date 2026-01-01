@@ -16,7 +16,8 @@ class DentalSegmentationModule(L.LightningModule):
         weight_decay: float = 1e-4,
         taps: list = [12, 18, 23],
         use_boundary_loss: bool = True,
-        lambda_b: float = 0.2
+        lambda_b: float = 0.2,
+        feat_channels: int = 256,
     ):
         super().__init__()
         self.save_hyperparameters()
@@ -26,6 +27,7 @@ class DentalSegmentationModule(L.LightningModule):
             num_classes=num_classes,
             taps=taps,
             num_register_tokens=num_register_tokens,
+            feat_channels=feat_channels,
         )
         
         self.seg_criterion = nn.CrossEntropyLoss()
